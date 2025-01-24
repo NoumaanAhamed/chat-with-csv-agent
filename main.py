@@ -38,7 +38,7 @@ if uploaded_file is not None:
     model = ChatGoogleGenerativeAI(model="gemini-1.5-flash", google_api_key=api_key)
 
     # Create the CSV agent
-    agent_executor = create_csv_agent(model, uploaded_file, verbose=True, allow_dangerous_code=True)
+    agent_executor = create_csv_agent(model, uploaded_file, allow_dangerous_code=True)
 
     # Chat interface
     user_input = st.text_input("Ask a question about the CSV data:")

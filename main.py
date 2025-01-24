@@ -28,6 +28,8 @@ with st.sidebar:
         st.session_state.conversation_history = ""
         st.success("Conversation history cleared!")
 
+    st.info("Clear the Input field first and then click the button to clear the conversation history.")
+
 # File uploader
 uploaded_file = st.file_uploader("Upload a CSV file", type=["csv"])
 

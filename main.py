@@ -3,6 +3,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_experimental.agents import create_csv_agent
 from dotenv import load_dotenv
 import os
+import pandas as pd
 
 load_dotenv()
 
@@ -11,6 +12,25 @@ if "conversation_history" not in st.session_state:
 
 st.title("Chat with CSV")
 st.write("Upload a CSV file and ask questions about the data.")
+
+csv_file_path = "data.csv"  # Path to your CSV file on the server
+preloaded_df = pd.read_csv(csv_file_path)
+
+st.write("Don't have a CSV file? Download the sample ecommerce CSV below, modify it if needed, and upload it back to the app.")
+csv_file = preloaded_df.to_csv(index=False).encode("utf-8")
+
+st.download_button(
+    label="Download Sample CSV",
+    data=csv_file,
+    file_name="sample_data.csv",
+    mime="text/csv",
+)
+
+st.write("Here are some questions you can ask:")
+st.write("1. How many products are there in the dataset?")
+st.write("2. What is the price of the hat?")
+st.write("3. What is the most expensive product?")
+st.write("4. What was my previous question?")
 
 with st.sidebar:
     st.header("API Key Configuration")

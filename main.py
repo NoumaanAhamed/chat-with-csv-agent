@@ -1,5 +1,6 @@
 import streamlit as st
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_openai import ChatOpenAI
 from langchain_experimental.agents import create_csv_agent
 from dotenv import load_dotenv
 import os
@@ -29,15 +30,23 @@ st.download_button(
 st.write("Here are some questions you can ask:")
 st.write("1. How many products are there in the dataset?")
 st.write("2. What is the price of the hat?")
-st.write("3. What is the most expensive product?")
+st.write("3. Give me a list of all the products?")
 st.write("4. What was my previous question?")
 
 with st.sidebar:
     st.header("API Key Configuration")
-    api_key = st.text_input("Enter your Google Generative AI API Key(optional):", type="password")
-    if not api_key:
-        st.warning("( Optional ) Not providing an API key will opt in for a default key.")
-        api_key = os.getenv("GOOGLE_API_KEY")  
+
+    model_choice = st.radio("Select a model to use:", ("Google Generative AI", "OpenAI"))
+
+    if model_choice == "Google Generative AI":
+        api_key = st.text_input("Enter your Google Generative AI API Key(optional):", type="password")
+        if not api_key:
+            st.warning("( Optional ) Not providing an API key will opt in for a default key.")
+            api_key = os.getenv("GOOGLE_API_KEY")
+    else:
+        api_key = st.text_input("Enter your OpenAI API Key:", type="password")
+        if not api_key:
+            st.warning("Please provide an OpenAI API key to use this option.")
 
     if st.button("Clear Conversation History"):
         st.session_state.conversation_history = ""
@@ -48,9 +57,12 @@ with st.sidebar:
 uploaded_file = st.file_uploader("Upload a CSV file", type=["csv"])
 
 if uploaded_file is not None:
-    model = ChatGoogleGenerativeAI(model="gemini-1.5-flash", google_api_key=api_key)
+    if model_choice == "Google Generative AI":
+        model = ChatGoogleGenerativeAI(model="gemini-1.5-flash", google_api_key=api_key)
+    else:
+        model = ChatOpenAI(model="gpt-4o-mini", api_key=api_key)
 
-    agent_executor = create_csv_agent(model, uploaded_file, allow_dangerous_code=True)
+    agent_executor = create_csv_agent(model, uploaded_file, verbose = True,allow_dangerous_code=True)
 
     user_input = st.text_input("Ask a question about the CSV data:")
 

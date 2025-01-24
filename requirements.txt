@@ -5,3 +5,4 @@ langchain_experimental
 pandas
 streamlit
 tabulate
+langchain-openai
